@@ -126,24 +126,24 @@ void show_seq(void)
     switch (simon.seq[i])
     {
     case 0:
-      LED_azul = 0x01; _delay_ms(2000); // Enciende LED azul
+      LED_amarillo = 0x01; _delay_ms(2000); // Enciende LED amarillo
       break;
     
     case 1:
-      PORTB = 0b1000; _delay_ms(2000); // Enciende LED 
+      LED_rojo = 0b1000; _delay_ms(2000); // Enciende LED rojo
       break;
     
     case 2:
-      PORTB = 0b100; _delay_ms(2000);// Enciende LED azul
+      LED_verde = 0b100; _delay_ms(2000);// Enciende LED verde
       break;
     
     case 3:
-      LED_amarillo = 0x02; _delay_ms(2000); // Enciende LED amarillo
+      LED_azul = 0x02; _delay_ms(2000); // Enciende LED azul
       break;
     
     default:
       PORTB = 0b1000;
-      PORTD = 0x03; _delay_ms(2000); // Enciende LED azul
+      PORTD = 0x03; _delay_ms(2000); // Enciende LED
       break;
     }
   PORTD = 0x00; // Apago todo
