@@ -8,8 +8,6 @@ typedef struct game {
 typedef enum
 {
     IDLE,
-    Card_Inserted_State,
-    Pin_Eentered_State,
-    Option_Selected_State,
-    Amount_Entered_State,
+    BLINK_2,
+    INIT,
 } eSystemState;
