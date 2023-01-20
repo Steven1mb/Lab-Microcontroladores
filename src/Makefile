@@ -3,8 +3,8 @@ F_CPU=1000000
 CC=avr-gcc
 OBJCOPY=avr-objcopy
 CFLAGS=-std=c99 -Wall -g -Os -mmcu=${MCU} -DF_CPU=${F_CPU} -I.
-TARGET=main
-SRCS=blink.c
+TARGET=lab_2
+SRCS=lab_2.c
 
 all:
 	${CC} ${CFLAGS} -o ${TARGET}.bin ${SRCS}
