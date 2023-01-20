@@ -10,7 +10,6 @@
 #define boton_verde     PD1
 #define boton_amarillo  PD2
 #define boton_azul      PD3
-PCMSK0 |= 0b00000001;
 
 int nivel = 0; // Nivel actual
 int patron[13];

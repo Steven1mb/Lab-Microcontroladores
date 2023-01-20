@@ -3,6 +3,16 @@
 #include <avr/interrupt.h>
 #include "lab_2.h"
 
+#define LED_rojo      PB3
+#define LED_verde     PB2
+#define LED_amarillo  PD0
+#define LED_azul      PD1
+
+#define boton_rojo      PB0
+#define boton_verde     PD6
+#define boton_amarillo  PD2
+#define boton_azul      PD3
+
 game_t simon;
 
 eSystemState state = IDLE;
