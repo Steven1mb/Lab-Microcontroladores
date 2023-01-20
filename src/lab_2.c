@@ -90,7 +90,9 @@ void blink_all(int times)
 {
   for (int i = 0; i < times; i++)
   {
-    PORTB = 0b00001100;
+    PORTB = 0x00;
+    PORTD = 0x00; _delay_ms(700);
+    PORTB = 0b00001100; 
     PORTD = 0b00000011; _delay_ms(700);
     PORTB = 0x00;
     PORTD = 0x00; _delay_ms(700);
@@ -124,27 +126,27 @@ void show_seq(void)
     switch (simon.seq[i])
     {
     case 0:
-      PORTD = 0x01; _delay_ms(2000);
+      LED_azul = 0x01; _delay_ms(2000); // Enciende LED azul
       break;
     
     case 1:
-      PORTB = 0b1000; _delay_ms(2000);
+      PORTB = 0b1000; _delay_ms(2000); // Enciende LED 
       break;
     
     case 2:
-      PORTB = 0b100; _delay_ms(2000);
+      PORTB = 0b100; _delay_ms(2000);// Enciende LED azul
       break;
     
     case 3:
-      PORTD = 0x02; _delay_ms(2000);
+      LED_amarillo = 0x02; _delay_ms(2000); // Enciende LED amarillo
       break;
     
     default:
       PORTB = 0b1000;
-      PORTD = 0x03; _delay_ms(2000);
+      PORTD = 0x03; _delay_ms(2000); // Enciende LED azul
       break;
     }
-  PORTD = 0x00;
+  PORTD = 0x00; // Apago todo
   PORTB = 0x00;
   }
 }
