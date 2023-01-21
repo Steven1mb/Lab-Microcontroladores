@@ -13,28 +13,28 @@
 #define boton_amarillo  PD2
 #define boton_azul      PD3
 
+#define POLY_MASK_32 0XB4BCD35C
+#define POLY_MASK_31 0X7A5BC2E3
+
+word lfsr32, lfsr31;
+
 game_t simon;
 
 eSystemState state = IDLE;
 
 void blink_all(int times);
-void init_seq(int seed);
-int get_rand(int x0);
-void show_seq(void);
-
-// Seed para generar el numero aleatorio
-int seed = 0;
-
-int x1; /*xo=seed, x1=next random number that we will generate */
-int a,c,m; /*a=constant multiplier, c=increment, m=modulus */
+void init_seq(int iter);
+void show_seq(int iter);
+int shift_lfsr(word *lfsr, word polynomial_mask);
+void init_lfsrs(void);
+int get_random(void);
 
 int main(void)
 {
-  DDRB = 0b00001100; // PB3, PB2 salidas, PB0 entradas
+  DDRB = 0b00011000; // PB4, PB3 salidas, PB0 entradas
   DDRD = 0b00000011; // PD6, PD3, PD2 entradas, PD1, PD0 salidas
 
   MCUCR &= 0b00001010; // Flanco negativo de INT0 e INT1
-
   
   GIMSK |= (1 << PCIE2 ) ; // Habilitar PCIE2 (activada por PD6)
   GIMSK |= (1 << PCIE0 ) ; // Habilitar PCIE0 (activada por PB0)
@@ -45,17 +45,9 @@ int main(void)
   PCMSK2 |= 0b01000000;
 
   sei();
+  init_lfsrs();
   
   while (1) {
-
-    // Generador de numeros aleatorios entre 1 y 6,
-    // en cada iteración del programa se incrementa
-    if (seed < 1000000)
-    {
-      seed++;
-    } else {
-      seed = 1;
-    }
 
     switch (state)
     {
@@ -73,9 +65,10 @@ int main(void)
       break;
 
     case INIT:
-      init_seq(seed);
-      show_seq();
-      state = IDLE;
+      init_seq(simon.iter);
+      show_seq(simon.iter);
+      state = IDLE;         // MODIFICAR
+      simon.isr_flag = 0;
       break;
     
     default:
@@ -91,64 +84,78 @@ void blink_all(int times)
   for (int i = 0; i < times; i++)
   {
     PORTB = 0x00;
-    PORTD = 0x00; _delay_ms(700);
-    PORTB = 0b00001100; 
-    PORTD = 0b00000011; _delay_ms(700);
+    PORTD = 0x00; _delay_ms(5000);
+    PORTB = 0b00011000; 
+    PORTD = 0b00000011; _delay_ms(10000);
     PORTB = 0x00;
-    PORTD = 0x00; _delay_ms(700);
+    PORTD = 0x00; _delay_ms(5000);
   }
 }
 
-void init_seq(int seed)
+void init_seq(int iter)
 {
-  for (int i = 0; i < simon.iter; i++)
+  for (int i = 0; i < iter; i++)
   {
-    simon.seq[i] = get_rand(seed);
+    simon.seq[i] = get_random();
   }
 }
 
-int get_rand(int x0)
+void show_seq(int iter)
 {
-  a = 4;
-  c = 22;
-  m = 1000;
-
-  x1 = (a*x0+c) % m;
-	x0 = x1;
-
-  return x0 & 0b11;
-}
-
-void show_seq(void)
-{
-  for (int i = 0; i < simon.iter; i++)
+  for (int i = 0; i < iter; i++)
   {
     switch (simon.seq[i])
     {
     case 0:
-      LED_amarillo = 0x01; _delay_ms(2000); // Enciende LED amarillo
+      PORTD = 0b1; _delay_ms(10000); // Enciende LED amarillo
       break;
     
     case 1:
-      LED_rojo = 0b1000; _delay_ms(2000); // Enciende LED rojo
+      PORTB = 0b10000; _delay_ms(10000); // Enciende LED rojo
       break;
     
     case 2:
-      LED_verde = 0b100; _delay_ms(2000);// Enciende LED verde
+      PORTB = 0b1000; _delay_ms(10000);// Enciende LED verde
       break;
     
     case 3:
-      LED_azul = 0x02; _delay_ms(2000); // Enciende LED azul
+      PORTD = 0b10; _delay_ms(10000); // Enciende LED azul
       break;
     
     default:
       PORTB = 0b1000;
-      PORTD = 0x03; _delay_ms(2000); // Enciende LED
+      PORTD = 0b11; _delay_ms(10000); // Enciende LED
       break;
     }
   PORTD = 0x00; // Apago todo
-  PORTB = 0x00;
+  PORTB = 0x00; _delay_ms(5000); // Espera
   }
+}
+
+int shift_lfsr(word *lfsr, word polynomial_mask)
+{
+	int feedback;
+
+	feedback = *lfsr & 1;
+	*lfsr >>= 1;
+	if (feedback == 1)
+		*lfsr ^= polynomial_mask;
+	return *lfsr;
+}
+
+void init_lfsrs(void)
+{
+	lfsr32 = 0xABCDE;	/* seed values */
+	lfsr31 = 0x23456789;
+}
+
+int get_random(void)
+{
+	/* This random number generator shifts the 32-bit LFSR twice before XORing
+	it with the 31-bit LFSR. The bottom 2 bits are used for the random number */
+
+	shift_lfsr(&lfsr32, POLY_MASK_32);
+	return (shift_lfsr(&lfsr32, POLY_MASK_32) ^ shift_lfsr(&lfsr31, POLY_MASK_31)) & 0b11;
 }
 
 ISR( PCINT2_vect ) //SIGNAL tmb sirve pero para mi ISR tiene mas sentido
