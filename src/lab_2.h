@@ -12,4 +12,7 @@ typedef enum
     IDLE,
     BLINK_2,
     INIT,
+    WAIT_SEQ,
+    PASS,
+    RESET,
 } eSystemState;

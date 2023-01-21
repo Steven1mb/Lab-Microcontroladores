@@ -16,7 +16,7 @@
 #define POLY_MASK_32 0XB4BCD35C
 #define POLY_MASK_31 0X7A5BC2E3
 
-word lfsr32, lfsr31;
+word lfsr32, lfsr31, curr_iter, ignore = 1;
 
 game_t simon;
 
@@ -67,8 +67,46 @@ int main(void)
     case INIT:
       init_seq(simon.iter);
       show_seq(simon.iter);
-      state = IDLE;         // MODIFICAR
       simon.isr_flag = 0;
+      curr_iter = 0;
+      ignore = 1;
+      state = WAIT_SEQ;
+      break;
+    
+    case WAIT_SEQ:
+      if (simon.isr_flag == 1)
+      {
+        if (simon.led == simon.seq[curr_iter])
+        {
+          curr_iter++;
+        } else
+        {
+          state = RESET;
+          break;
+        }
+        simon.isr_flag = 0;
+        ignore = 1;
+      }
+      if (curr_iter >= simon.iter) state = PASS;
+      break;
+    
+    case PASS:
+      if (simon.iter < 14)
+      {
+        simon.seq[simon.iter] = get_random();
+        simon.iter++;
+      }
+      show_seq(simon.iter);
+      curr_iter = 0;
+      ignore = 1;
+      state = WAIT_SEQ;
+      break;
+    
+    case RESET:
+      blink_all(3);
+      simon.isr_flag = 0;
+      ignore = 1;
+      state = IDLE;
       break;
     
     default:
@@ -158,25 +196,27 @@ int get_random(void)
 	return (shift_lfsr(&lfsr32, POLY_MASK_32) ^ shift_lfsr(&lfsr31, POLY_MASK_31)) & 0b11;
 }
 
-ISR( PCINT2_vect ) //SIGNAL tmb sirve pero para mi ISR tiene mas sentido
-{
-  simon.isr_flag = 1;
+ISR( PCINT2_vect ) // Activada por PD6
+{ 
+  if (!ignore) simon.isr_flag = 1; // Simular flanco negativo
   simon.led = 2;
+  ignore = 0;
 }
 
-ISR( PCINT0_vect ) //SIGNAL tmb sirve pero para mi ISR tiene mas sentido
-{
-  simon.isr_flag = 1;
+ISR( PCINT0_vect ) // Activada por PB0
+{ 
+  if (!ignore) simon.isr_flag = 1; // Simular flanco negativo
   simon.led = 1;
+  ignore = 0;
 }
 
-ISR( INT0_vect ) //SIGNAL tmb sirve pero para mi ISR tiene mas sentido
+ISR( INT0_vect ) // Activada por PD0
 {
   simon.isr_flag = 1;
   simon.led = 0;
 }
 
-ISR( INT1_vect ) //SIGNAL tmb sirve pero para mi ISR tiene mas sentido
+ISR( INT1_vect ) // Activada por PD1
 {
   simon.isr_flag = 1;
   simon.led = 3;
