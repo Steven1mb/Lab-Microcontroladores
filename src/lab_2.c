@@ -3,16 +3,6 @@
 #include <avr/interrupt.h>
 #include "lab_2.h"
 
-#define LED_rojo      PB3
-#define LED_verde     PB2
-#define LED_amarillo  PD0
-#define LED_azul      PD1
-
-#define boton_rojo      PB0
-#define boton_verde     PD6
-#define boton_amarillo  PD2
-#define boton_azul      PD3
-
 #define POLY_MASK_32 0XB4BCD35C
 #define POLY_MASK_31 0X7A5BC2E3
 
@@ -22,12 +12,12 @@ game_t simon;
 
 eSystemState state = IDLE;
 
-void blink_all(int times);
-void init_seq(int iter);
-void show_seq(int iter);
-int shift_lfsr(word *lfsr, word polynomial_mask);
-void init_lfsrs(void);
-int get_random(void);
+void blink_all(int times); // Funcion para hacer los LED parpadear
+void init_seq(int iter);   // Funcion donde se crea la secuencia
+void show_seq(int iter);   // Funcion para mostrar la secuencia de luces 
+int shift_lfsr(word *lfsr, word polynomial_mask); // Funcion donde se hace el shift lfsr
+void init_lfsrs(void); // Funcion donde se establecen los seed values
+int get_random(void); // Funcion que calcula los numeros random
 
 int main(void)
 {
@@ -51,21 +41,21 @@ int main(void)
 
     switch (state)
     {
-    case IDLE:
+    case IDLE: // Estado inicial IDLE, se espera a que el usuario toque un boton
       simon.iter = 4;
-      if (simon.isr_flag == 1)
+      if (simon.isr_flag == 1) // Para esto, se espera a que se levante el flag por el ISR
       {
-        state = BLINK_2;
+        state = BLINK_2; // CUando inicia, se parpadea dos veces
       }
       break;
     
     case BLINK_2:
       blink_all(2);
-      state = INIT;
+      state = INIT; // luego al estado inicial
       break;
 
     case INIT:
-      init_seq(simon.iter);
+      init_seq(simon.iter); // Se crea y muestra la secuencia
       show_seq(simon.iter);
       simon.isr_flag = 0;
       curr_iter = 0;
@@ -73,7 +63,7 @@ int main(void)
       state = WAIT_SEQ;
       break;
     
-    case WAIT_SEQ:
+    case WAIT_SEQ: // Se espera a que el usuario toque los botones
       if (simon.isr_flag == 1)
       {
         if (simon.led == simon.seq[curr_iter])
@@ -81,7 +71,7 @@ int main(void)
           curr_iter++;
         } else
         {
-          state = RESET;
+          state = RESET; // Si el toque fue incorrecto, se va a estado RESET
           break;
         }
         simon.isr_flag = 0;
@@ -90,20 +80,21 @@ int main(void)
       if (curr_iter >= simon.iter) state = PASS;
       break;
     
-    case PASS:
+    case PASS: // Si la secuencia ingresada es correcta, se sube de nivel
       if (simon.iter < 14)
       {
         simon.seq[simon.iter] = get_random();
         simon.iter++;
       }
-      show_seq(simon.iter);
+      show_seq(simon.iter); // Se ,uestra la nueva secuencia
       curr_iter = 0;
+      simon.isr_flag = 0;
       ignore = 1;
-      state = WAIT_SEQ;
+      state = WAIT_SEQ; // Y vuelve a estado de espera al input del usuario
       break;
     
-    case RESET:
-      blink_all(3);
+    case RESET: // Si el input fue invalido, se parpadea 3 veces, s reinicia el juego
+      blink_all(3); // Y el estado vuelve a IDLE
       simon.isr_flag = 0;
       ignore = 1;
       state = IDLE;
@@ -117,7 +108,7 @@ int main(void)
   return 0;
 }
 
-void blink_all(int times)
+void blink_all(int times) // Funcion para parpadear todos los LEDS
 {
   for (int i = 0; i < times; i++)
   {
@@ -130,7 +121,7 @@ void blink_all(int times)
   }
 }
 
-void init_seq(int iter)
+void init_seq(int iter) 
 {
   for (int i = 0; i < iter; i++)
   {
@@ -162,7 +153,7 @@ void show_seq(int iter)
     
     default:
       PORTB = 0b1000;
-      PORTD = 0b11; _delay_ms(10000); // Enciende LED
+      PORTD = 0b11; _delay_ms(10000); 
       break;
     }
   PORTD = 0x00; // Apago todo
