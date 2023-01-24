@@ -6,7 +6,7 @@
 #define POLY_MASK_32 0XB4BCD35C
 #define POLY_MASK_31 0X7A5BC2E3
 
-word lfsr32, lfsr31, curr_iter, ignore = 1;
+word lfsr32, lfsr31, curr_iter, ignore = 1, ovf_en = 0, ovf = 0, led_time;
 
 game_t simon;
 
@@ -14,10 +14,11 @@ eSystemState state = IDLE;
 
 void blink_all(int times); // Funcion para hacer los LED parpadear
 void init_seq(int iter);   // Funcion donde se crea la secuencia
-void show_seq(int iter);   // Funcion para mostrar la secuencia de luces 
+void show_seq(int iter, int time_on); // Funcion para mostrar la secuencia de luces 
 int shift_lfsr(word *lfsr, word polynomial_mask); // Funcion donde se hace el shift lfsr
 void init_lfsrs(void); // Funcion donde se establecen los seed values
 int get_random(void); // Funcion que calcula los numeros random
+void ovf_wait(int times_2ms); // Funcion que calcula tiempo mediante contador 0 e interrupts
 
 int main(void)
 {
@@ -34,6 +35,10 @@ int main(void)
   PCMSK |= 0b00000001;
   PCMSK2 |= 0b01000000;
 
+  TCCR0A = 0x00; // Normal operation para Timer 0
+  TCCR0B = 0b00000011; // Prescaler de 64 con reloj de 8 MHz => Overflow cada 2 ms
+  TIMSK = 0b00; // TOV0 deshabilitado de inicio
+
   sei();
   init_lfsrs();
   
@@ -43,6 +48,7 @@ int main(void)
     {
     case IDLE: // Estado inicial IDLE, se espera a que el usuario toque un boton
       simon.iter = 4;
+      led_time = 1000;
       if (simon.isr_flag == 1) // Para esto, se espera a que se levante el flag por el ISR
       {
         state = BLINK_2; // CUando inicia, se parpadea dos veces
@@ -56,7 +62,7 @@ int main(void)
 
     case INIT:
       init_seq(simon.iter); // Se crea y muestra la secuencia
-      show_seq(simon.iter);
+      show_seq(simon.iter, led_time);
       simon.isr_flag = 0;
       curr_iter = 0;
       ignore = 1;
@@ -85,8 +91,9 @@ int main(void)
       {
         simon.seq[simon.iter] = get_random();
         simon.iter++;
+        led_time -= 100; // Reducir 200 ms en cada gane
       }
-      show_seq(simon.iter); // Se ,uestra la nueva secuencia
+      show_seq(simon.iter, led_time); // Se muestra la nueva secuencia
       curr_iter = 0;
       simon.isr_flag = 0;
       ignore = 1;
@@ -112,16 +119,30 @@ void blink_all(int times) // Funcion para parpadear todos los LEDS
 {
   for (int i = 0; i < times; i++)
   {
+    PORTB = 0b00011000;
+    PORTD = 0b00000011;
+    ovf_wait(250); // Esperar 0.5 segundos
     PORTB = 0x00;
-    PORTD = 0x00; _delay_ms(5000);
-    PORTB = 0b00011000; 
-    PORTD = 0b00000011; _delay_ms(10000);
-    PORTB = 0x00;
-    PORTD = 0x00; _delay_ms(5000);
+    PORTD = 0x00;
+    ovf_wait(250); // Esperar 0.5 segundos
   }
 }
 
-void init_seq(int iter) 
+void ovf_wait(int times_2ms)
+{
+  TIMSK = 0b10; // Habilitar TOV0
+  ovf_en = 1;
+  ovf = 0;
+  TCNT0 = 0x00;
+  while (ovf < times_2ms)
+  {
+    PORTB &= 0xFF;
+  }
+  TIMSK = 0b00; // Deshabilitar TOV0
+  ovf_en = 0;
+}
+
+void init_seq(int iter)
 {
   for (int i = 0; i < iter; i++)
   {
@@ -129,35 +150,35 @@ void init_seq(int iter)
   }
 }
 
-void show_seq(int iter)
+void show_seq(int iter, int time_on)
 {
   for (int i = 0; i < iter; i++)
   {
     switch (simon.seq[i])
     {
     case 0:
-      PORTD = 0b1; _delay_ms(10000); // Enciende LED amarillo
+      PORTD = 0b1; ovf_wait(time_on); // Enciende LED amarillo
       break;
     
     case 1:
-      PORTB = 0b10000; _delay_ms(10000); // Enciende LED rojo
+      PORTB = 0b10000; ovf_wait(time_on); // Enciende LED rojo
       break;
     
     case 2:
-      PORTB = 0b1000; _delay_ms(10000);// Enciende LED verde
+      PORTB = 0b1000; ovf_wait(time_on);// Enciende LED verde
       break;
     
     case 3:
-      PORTD = 0b10; _delay_ms(10000); // Enciende LED azul
+      PORTD = 0b10; ovf_wait(time_on); // Enciende LED azul
       break;
     
     default:
       PORTB = 0b1000;
-      PORTD = 0b11; _delay_ms(10000); 
+      PORTD = 0b11; ovf_wait(time_on);
       break;
     }
   PORTD = 0x00; // Apago todo
-  PORTB = 0x00; _delay_ms(5000); // Espera
+  PORTB = 0x00; ovf_wait(125); // Espera de 250 ms
   }
 }
 
@@ -211,4 +232,9 @@ ISR( INT1_vect ) // Activada por PD1
 {
   simon.isr_flag = 1;
   simon.led = 3;
+}
+
+ISR( TIMER0_OVF_vect ) // OVERFLOW
+{ 
+  if (ovf_en) ovf++;
 }
