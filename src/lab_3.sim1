@@ -1,0 +1,123 @@
+<circuit version="1.0.0-RC3" rev="1148" stepSize="1000000" stepsPS="1000000" NLsteps="100000" reaStep="1000000" animate="0" >
+
+<item itemtype="WaveGen" CircId="WaveGen-2" mainComp="false" ShowProp="Semi_Ampli" Show_id="false" Show_Val="true" Pos="560,552" rotation="0" hflip="1" vflip="1" label="WaveGen-2" idLabPos="-64,-24" labelrot="0" valLabPos="-16,8" valLabRot="0" Out="true" Running="true" Wave_Type="Sine" Freq="1000 Hz" Steps="1000 Steps" Duty="100 %" Always_On="false" Semi_Ampli="24 V" Mid_Volt="0 V" />
+
+<item itemtype="Oscope" CircId="Oscope-3" mainComp="false" Show_id="false" Show_Val="false" Pos="888,572" rotation="0" hflip="1" vflip="1" label="Oscope-3" idLabPos="-90,-100" labelrot="0" valLabPos="-16,20" valLabRot="0" Basic_X="135 _Pixels" Basic_Y="135 _Pixels" TimDiv="11833600000" TimPos="0,0,0,0," VolDiv="8,8,8,8," Tunnels=",,,," Trigger="2" Filter="0.1 V" Trigger="2" AutoSC="4" Tracks="1" HideCh="false,false,false,false," VolPos="-13.2215,0,0,0," />
+
+<item itemtype="Diode" CircId="Diode-5" mainComp="false" Show_id="false" Show_Val="false" Pos="632,568" rotation="0" hflip="1" vflip="1" label="Diode-5" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Model="Diode Default" Threshold="0.634767 V" MaxCurrent="1 A" Resistance="0.05 Ω" BrkDownV="0 V" SatCurrent="171.435 nA" EmCoef="2" />
+
+<item itemtype="Diode" CircId="Diode-6" mainComp="false" Show_id="false" Show_Val="false" Pos="700,568" rotation="0" hflip="1" vflip="1" label="Diode-6" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Model="Diode Default" Threshold="0.634767 V" MaxCurrent="1 A" Resistance="0.05 Ω" BrkDownV="0 V" SatCurrent="171.435 nA" EmCoef="2" />
+
+<item itemtype="Diode" CircId="Diode-7" mainComp="false" Show_id="false" Show_Val="false" Pos="632,612" rotation="0" hflip="1" vflip="1" label="Diode-7" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Model="Diode Default" Threshold="0.634767 V" MaxCurrent="1 A" Resistance="0.05 Ω" BrkDownV="0 V" SatCurrent="171.435 nA" EmCoef="2" />
+
+<item itemtype="Diode" CircId="Diode-8" mainComp="false" Show_id="false" Show_Val="false" Pos="700,612" rotation="0" hflip="1" vflip="1" label="Diode-8" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Model="Diode Default" Threshold="0.634767 V" MaxCurrent="1 A" Resistance="0.05 Ω" BrkDownV="0 V" SatCurrent="171.435 nA" EmCoef="2" />
+
+<item itemtype="Resistor" CircId="Resistor-11" mainComp="false" ShowProp="Resistance" Show_id="false" Show_Val="true" Pos="664,592" rotation="0" hflip="1" vflip="1" label="Resistor-11" idLabPos="-16,-24" labelrot="0" valLabPos="-10.4047,5.3783" valLabRot="0" Resistance="1 kΩ" />
+
+<item itemtype="Ground" CircId="Ground-23" mainComp="false" Show_id="false" Show_Val="false" Pos="664,660" rotation="0" hflip="1" vflip="1" label="Ground-23" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
+
+<item itemtype="Capacitor" CircId="Capacitor-36" mainComp="false" ShowProp="Capacitance" Show_id="false" Show_Val="true" Pos="752,612" rotation="90" hflip="1" vflip="1" label="Capacitor-36" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Capacitance="100 µF" Resistance="1e-06 Ω" InitVolt="0 V" AutoStep="0 _Steps" />
+
+<item itemtype="Battery" CircId="Battery-43" mainComp="false" ShowProp="Voltage" Show_id="false" Show_Val="true" Pos="644,524" rotation="0" hflip="-1" vflip="1" label="Battery-43" idLabPos="-18,-22" labelrot="0" valLabPos="7.40754,11.2434" valLabRot="0" Voltage="24 V" />
+
+<item itemtype="Voltage Source" CircId="Voltage Source-44" mainComp="false" ShowProp="MaxValue" Show_id="false" Show_Val="true" Pos="600,508" rotation="0" hflip="1" vflip="1" label="Voltage Source-44" idLabPos="-32,-48" labelrot="0" valLabPos="-8,30" valLabRot="0" Value_Volt="24 V" MaxValue="24 V" />
+
+<item itemtype="Resistor" CircId="Resistor-46" mainComp="false" ShowProp="Resistance" Show_id="false" Show_Val="true" Pos="696,524" rotation="0" hflip="1" vflip="1" label="Resistor-46" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Resistance="86 kΩ" />
+
+<item itemtype="Resistor" CircId="Resistor-47" mainComp="false" ShowProp="Resistance" Show_id="false" Show_Val="true" Pos="736,544" rotation="90" hflip="1" vflip="1" label="Resistor-47" idLabPos="-16,-24" labelrot="0" valLabPos="-16,6" valLabRot="0" Resistance="10 kΩ" />
+
+<item itemtype="Ground" CircId="Ground-56" mainComp="false" Show_id="false" Show_Val="false" Pos="736,580" rotation="0" hflip="1" vflip="1" label="Ground-56" idLabPos="-16,8" labelrot="0" valLabPos="-16,20" valLabRot="0" />
+
+<item itemtype="Voltimeter" CircId="Voltimeter-58" mainComp="false" Show_id="false" Show_Val="false" Pos="744,488" rotation="0" hflip="1" vflip="1" label="Voltimeter-58" idLabPos="-24,-40" labelrot="0" valLabPos="-16,20" valLabRot="0" SwitchPins="false" />
+
+<item itemtype="Voltimeter" CircId="Voltimeter-65" mainComp="false" Show_id="false" Show_Val="false" Pos="816,684" rotation="0" hflip="1" vflip="1" label="Voltimeter-65" idLabPos="-24,-40" labelrot="0" valLabPos="-16,20" valLabRot="0" SwitchPins="false" />
+
+<item itemtype="Node" CircId="Node-14" mainComp="false" Pos="716,592" />
+
+<item itemtype="Node" CircId="Node-18" mainComp="false" Pos="616,592" />
+
+<item itemtype="Node" CircId="Node-21" mainComp="false" Pos="664,568" />
+
+<item itemtype="Node" CircId="Node-25" mainComp="false" Pos="664,612" />
+
+<item itemtype="Node" CircId="Node-31" mainComp="false" Pos="716,588" />
+
+<item itemtype="Node" CircId="Node-34" mainComp="false" Pos="616,588" />
+
+<item itemtype="Node" CircId="Node-38" mainComp="false" Pos="752,588" />
+
+<item itemtype="Node" CircId="Node-41" mainComp="false" Pos="752,636" />
+
+<item itemtype="Node" CircId="Node-59" mainComp="false" Pos="736,524" />
+
+<item itemtype="Node" CircId="Node-63" mainComp="false" Pos="736,560" />
+
+<item itemtype="Node" CircId="Node-66" mainComp="false" Pos="772,588" />
+
+<item itemtype="Node" CircId="Node-70" mainComp="false" Pos="696,692" />
+
+<item itemtype="Connector" uid="Connector-9" startpinid="Diode-5-rPin" endpinid="Node-21-0" pointList="648,568,664,568" />
+
+<item itemtype="Connector" uid="Connector-10" startpinid="Diode-7-rPin" endpinid="Node-25-0" pointList="648,612,664,612" />
+
+<item itemtype="Connector" uid="Connector-12" startpinid="Resistor-11-rPin" endpinid="Node-14-0" pointList="680,592,716,592" />
+
+<item itemtype="Connector" uid="Connector-13" startpinid="Diode-8-rPin" endpinid="Node-14-1" pointList="716,612,716,592" />
+
+<item itemtype="Connector" uid="Connector-15" startpinid="Node-14-2" endpinid="Node-31-0" pointList="716,592,716,588" />
+
+<item itemtype="Connector" uid="Connector-16" startpinid="Diode-5-lPin" endpinid="Node-34-0" pointList="616,568,616,588" />
+
+<item itemtype="Connector" uid="Connector-17" startpinid="Resistor-11-lPin" endpinid="Node-18-1" pointList="648,592,616,592" />
+
+<item itemtype="Connector" uid="Connector-19" startpinid="Node-18-2" endpinid="Diode-7-lPin" pointList="616,592,616,612" />
+
+<item itemtype="Connector" uid="Connector-22" startpinid="Node-21-2" endpinid="Diode-6-lPin" pointList="664,568,684,568" />
+
+<item itemtype="Connector" uid="Connector-24" startpinid="Ground-23-Gnd" endpinid="Node-25-1" pointList="664,644,664,612" />
+
+<item itemtype="Connector" uid="Connector-26" startpinid="Node-25-2" endpinid="Diode-8-lPin" pointList="664,612,684,612" />
+
+<item itemtype="Connector" uid="Connector-30" startpinid="Oscope-3-Pin2" endpinid="Node-66-0" pointList="800,588,772,588" />
+
+<item itemtype="Connector" uid="Connector-32" startpinid="Node-31-2" endpinid="Diode-6-rPin" pointList="716,588,716,568" />
+
+<item itemtype="Connector" uid="Connector-33" startpinid="Oscope-3-PinG" endpinid="Node-41-0" pointList="800,636,752,636" />
+
+<item itemtype="Connector" uid="Connector-35" startpinid="Node-34-2" endpinid="Node-18-0" pointList="616,588,616,592" />
+
+<item itemtype="Connector" uid="Connector-37" startpinid="Capacitor-36-lPin" endpinid="Node-38-1" pointList="752,596,752,588" />
+
+<item itemtype="Connector" uid="Connector-39" startpinid="Node-38-2" endpinid="Node-31-1" pointList="752,588,716,588" />
+
+<item itemtype="Connector" uid="Connector-40" startpinid="Capacitor-36-rPin" endpinid="Node-41-1" pointList="752,628,752,636" />
+
+<item itemtype="Connector" uid="Connector-42" startpinid="Node-41-2" endpinid="Node-70-0" pointList="752,636,708,636,708,692,696,692" />
+
+<item itemtype="Connector" uid="Connector-20" startpinid="WaveGen-2-outnod" endpinid="Node-21-1" pointList="576,552,664,552,664,568" />
+
+<item itemtype="Connector" uid="Connector-45" startpinid="Voltage Source-44-outPin" endpinid="Battery-43-rPin" pointList="628,524,628,524" />
+
+<item itemtype="Connector" uid="Connector-55" startpinid="Battery-43-lPin" endpinid="Resistor-46-lPin" pointList="660,524,680,524" />
+
+<item itemtype="Connector" uid="Connector-57" startpinid="Ground-56-Gnd" endpinid="Node-63-0" pointList="736,564,736,560" />
+
+<item itemtype="Connector" uid="Connector-48" startpinid="Resistor-46-rPin" endpinid="Node-59-0" pointList="712,524,736,524" />
+
+<item itemtype="Connector" uid="Connector-60" startpinid="Node-59-2" endpinid="Resistor-47-lPin" pointList="736,524,736,528" />
+
+<item itemtype="Connector" uid="Connector-61" startpinid="Node-59-1" endpinid="Voltimeter-58-lPin" pointList="736,524,736,504" />
+
+<item itemtype="Connector" uid="Connector-62" startpinid="Voltimeter-58-rPin" endpinid="Node-63-1" pointList="752,504,752,560,736,560" />
+
+<item itemtype="Connector" uid="Connector-64" startpinid="Node-63-2" endpinid="Resistor-47-rPin" pointList="736,560,736,560" />
+
+<item itemtype="Connector" uid="Connector-67" startpinid="Node-66-2" endpinid="Node-38-0" pointList="772,588,752,588" />
+
+<item itemtype="Connector" uid="Connector-68" startpinid="Node-66-1" endpinid="Voltimeter-65-lPin" pointList="772,588,772,700,808,700" />
+
+<item itemtype="Connector" uid="Connector-69" startpinid="Voltimeter-65-rPin" endpinid="Node-70-1" pointList="824,700,824,732,696,732,696,692" />
+
+<item itemtype="Connector" uid="Connector-71" startpinid="Node-70-2" endpinid="Node-34-1" pointList="696,692,592,692,592,588,616,588" />
+
+</circuit>
