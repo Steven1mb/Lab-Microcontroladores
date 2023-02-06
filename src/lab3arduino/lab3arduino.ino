@@ -106,6 +106,6 @@ void loop() {
     Serial.print(v2); Serial.print(" V,");
     Serial.print(v3); Serial.print(" V,");
     Serial.print(v4); Serial.println(" V");
-    delay(1000);
+    delay(300);
   }
 }

@@ -28,4 +28,3 @@ while True:
             line = []
         else:
             line.append(c)
-

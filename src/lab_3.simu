@@ -1,5 +1,13 @@
 <circuit Speed_sps="1000000" Simu_Step_nS="1000" Speed_per="100" noLinAcc="5" type="simulide_0.4" reactStep="50" animate="0">
 
+Unique  Id: TextComponent-644: 
+Circuit Id: TextComponent-644
+<item Show_id="false" Text="Cambiar modo&#xa;DC o AC" rotation="0" itemtype="TextComponent" labelx="-16" circPos="0,0" x="-368" labelrot="0" boardRot="-1e+06" Font_Size="10" Fixed_Width="true" labely="-24" id="TextComponent-644" valLabelx="0" mainComp="false" hflip="1" boardPos="-1e+06,-1e+06" Font="Helvetica [Cronyx]" Margin="5" objectName="TextComponent-644" vflip="1" valLabely="0" Opacity="1" valLabRot="0" Border="1" circRot="2.815504466706473e-114" y="-532"/>
+
+Unique  Id: TextComponent-642: 
+Circuit Id: TextComponent-642
+<item Show_id="false" Text="Activar comu&#xa;serial" rotation="0" itemtype="TextComponent" labelx="-16" circPos="0,0" x="-784" labelrot="0" boardRot="-1e+06" Font_Size="10" Fixed_Width="true" labely="-24" id="TextComponent-642" valLabelx="0" mainComp="false" hflip="1" boardPos="-1e+06,-1e+06" Font="Helvetica [Cronyx]" Margin="5" objectName="TextComponent-642" vflip="1" valLabely="0" Opacity="1" valLabRot="0" Border="1" circRot="2.8109936716440563e-114" y="-548"/>
+
 Unique  Id: Ground-635: 
 Circuit Id: Ground-609
 <item Show_id="false" rotation="0" itemtype="Ground" labelx="-16" circPos="0,0" x="-136" labelrot="0" boardRot="-1e+06" labely="8" id="Ground-609" valLabelx="0" mainComp="false" hflip="1" boardPos="-1e+06,-1e+06" objectName="Ground-635" vflip="1" valLabely="0" valLabRot="0" circRot="0" y="-156"/>
