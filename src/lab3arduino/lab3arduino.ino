@@ -3,7 +3,6 @@
 #include <Adafruit_GFX.h>
 #include <Adafruit_PCD8544.h>
 
-
 // Defino los pines para la pantalla LCD
 #define SCLK 13
 #define DIN 11
@@ -36,10 +35,10 @@ void setup() {
   // Inicializar pines de entrada y salida
   pinMode(switchpin, INPUT);
   pinMode(serialpin, INPUT);
+  pinMode(3, OUTPUT);
   pinMode(4, OUTPUT);
-  pinMode(8, OUTPUT);
-  pinMode(12, OUTPUT);
-  pinMode(13, OUTPUT);
+  pinMode(5, OUTPUT);
+  pinMode(6, OUTPUT);
 
   // Inicializar el puerto serial
   Serial.begin(9600);
@@ -71,14 +70,14 @@ void loop() {
     strcpy(mode,"DC");
 
     // Encender LEDs de alerta
-    if (v1 <= -20 || v1 >= 20 ) digitalWrite(4, HIGH);
+    if (v1 <= -20 || v1 >= 20 ) digitalWrite(3, HIGH);
+    else digitalWrite(3, LOW);
+    if (v2 <= -20 || v2 >= 20 ) digitalWrite(4, HIGH);
     else digitalWrite(4, LOW);
-    if (v2 <= -20 || v2 >= 20 ) digitalWrite(8, HIGH);
-    else digitalWrite(8, LOW);
-    if (v3 <= -20 || v3 >= 20 ) digitalWrite(12, HIGH);
-    else digitalWrite(12, LOW);
-    if (v4 <= -20 || v4 >= 20 ) digitalWrite(13, HIGH);
-    else digitalWrite(13, LOW);
+    if (v3 <= -20 || v3 >= 20 ) digitalWrite(5, HIGH);
+    else digitalWrite(5, LOW);
+    if (v4 <= -20 || v4 >= 20 ) digitalWrite(6, HIGH);
+    else digitalWrite(6, LOW);
   }
   else { // Modo AC
     v4 = ((v4 * 4.56) + 1.2) / 1.4142; // Estas 4 señales primero se escalan
@@ -88,15 +87,31 @@ void loop() {
     strcpy(mode,"AC");
 
     // Encender LEDs de alerta
-    if ((v1*1.4142) <= -20 || (v1*1.4142) >= 20 ) digitalWrite(4, HIGH);
+    if ((v1*1.4142) <= -20 || (v1*1.4142) >= 20 ) digitalWrite(3, HIGH);
+    else digitalWrite(3, LOW);
+    if ((v2*1.4142) <= -20 || (v2*1.4142) >= 20 ) digitalWrite(4, HIGH);
     else digitalWrite(4, LOW);
-    if ((v2*1.4142) <= -20 || (v2*1.4142) >= 20 ) digitalWrite(8, HIGH);
-    else digitalWrite(8, LOW);
-    if ((v3*1.4142) <= -20 || (v3*1.4142) >= 20 ) digitalWrite(12, HIGH);
-    else digitalWrite(12, LOW);
-    if ((v4*1.4142) <= -20 || (v4*1.4142) >= 20 ) digitalWrite(13, HIGH);
-    else digitalWrite(13, LOW);
+    if ((v3*1.4142) <= -20 || (v3*1.4142) >= 20 ) digitalWrite(5, HIGH);
+    else digitalWrite(5, LOW);
+    if ((v4*1.4142) <= -20 || (v4*1.4142) >= 20 ) digitalWrite(6, HIGH);
+    else digitalWrite(6, LOW);
   }
+
+  // Esta seccion desplega los valores de los 4
+  // canales en la PCD e indica el modo de operacion
+  display.clearDisplay();
+  display.setCursor(0,0);
+  display.print("Voltimetro ");
+  display.println(mode);
+  display.print("\nV_1: ");
+  display.print(v1); display.println(" V");
+  display.print("V_2: ");
+  display.print(v2); display.println(" V");
+  display.print("V_3: ");
+  display.print(v3); display.println(" V");
+  display.print("V_4: ");
+  display.print(v4); display.print(" V");
+  display.display();
   
   // Un switch habilita la comunicacion serial,
   // se envian los datos de los 4 canales
