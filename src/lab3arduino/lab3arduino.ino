@@ -36,7 +36,10 @@ void setup() {
   // Inicializar pines de entrada y salida
   pinMode(switchpin, INPUT);
   pinMode(serialpin, INPUT);
+  pinMode(4, OUTPUT);
+  pinMode(8, OUTPUT);
   pinMode(12, OUTPUT);
+  pinMode(13, OUTPUT);
 
   // Inicializar el puerto serial
   Serial.begin(9600);
@@ -66,6 +69,16 @@ void loop() {
     v2 = (v2 * 9.6) - 24; // y se restan los 24V de la bateria
     v1 = (v1 * 9.6) - 24; // permanente para hallar valor real
     strcpy(mode,"DC");
+
+    // Encender LEDs de alerta
+    if (v1 <= -20 || v1 >= 20 ) digitalWrite(4, HIGH);
+    else digitalWrite(4, LOW);
+    if (v2 <= -20 || v2 >= 20 ) digitalWrite(8, HIGH);
+    else digitalWrite(8, LOW);
+    if (v3 <= -20 || v3 >= 20 ) digitalWrite(12, HIGH);
+    else digitalWrite(12, LOW);
+    if (v4 <= -20 || v4 >= 20 ) digitalWrite(13, HIGH);
+    else digitalWrite(13, LOW);
   }
   else { // Modo AC
     v4 = ((v4 * 4.56) + 1.2) / 1.4142; // Estas 4 señales primero se escalan
@@ -73,6 +86,16 @@ void loop() {
     v2 = ((v2 * 4.56) + 1.2) / 1.4142; // se compensa la caida de tension de
     v1 = ((v1 * 4.56) + 1.2) / 1.4142; // los 2 diodos y se dividen por raiz de 2
     strcpy(mode,"AC");
+
+    // Encender LEDs de alerta
+    if ((v1*1.4142) <= -20 || (v1*1.4142) >= 20 ) digitalWrite(4, HIGH);
+    else digitalWrite(4, LOW);
+    if ((v2*1.4142) <= -20 || (v2*1.4142) >= 20 ) digitalWrite(8, HIGH);
+    else digitalWrite(8, LOW);
+    if ((v3*1.4142) <= -20 || (v3*1.4142) >= 20 ) digitalWrite(12, HIGH);
+    else digitalWrite(12, LOW);
+    if ((v4*1.4142) <= -20 || (v4*1.4142) >= 20 ) digitalWrite(13, HIGH);
+    else digitalWrite(13, LOW);
   }
   
   // Un switch habilita la comunicacion serial,
@@ -84,9 +107,5 @@ void loop() {
     Serial.print(v3); Serial.print(" V,");
     Serial.print(v4); Serial.println(" V");
     delay(1000);
-    digitalWrite(12, LOW);
-  }
-  else {
-    digitalWrite(12, HIGH);
   }
 }
