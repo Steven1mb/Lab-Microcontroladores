@@ -158,29 +158,7 @@ int main(void)
 	gpio_set(GPIOC, GPIO1);
 
 	while (1) {
-		// Obtencion del eje X
-		gyr_x = read_gyro(GYR_OUT_X_L, 0);
-		gyr_x |= read_gyro(GYR_OUT_X_H, 1);
-
-		// Obtencion del eje Y
-		gyr_y = read_gyro(GYR_OUT_Y_L, 0);
-		gyr_y |= read_gyro(GYR_OUT_Y_H, 1);
-
-		// Obtencion del eje Z
-		gyr_z = read_gyro(GYR_OUT_Z_L, 0);
-		gyr_z |= read_gyro(GYR_OUT_Z_H, 1);
-
-		gyr_x = gyr_x*L3GD20_SENSITIVITY_500DPS;
-        gyr_y = gyr_y*L3GD20_SENSITIVITY_500DPS;
-        gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
-
-		gfx_fillScreen(LCD_BLACK);
-		sprintf(gyr_x_c, "%s", show_info("X:", gyr_x, 25));
-		sprintf(gyr_y_c, "%s", show_info("Y:", gyr_y, 75));
-		sprintf(gyr_z_c, "%s", show_info("Z:", gyr_z, 125));
-		lcd_show_frame();
-
-		// Checkear si GP3 es presionado
+		// Checkear si botón USER es presionado
         if (gpio_get(GPIOA, GPIO0))
         {
             // Maneja el numero de veces que el boton ha sido constante
@@ -205,12 +183,35 @@ int main(void)
 				if (BTN_released == 0)
 				{
                     // Alterna la transferencia de datos
-					trans = ~trans;
+					trans = !trans;
 					BTN_released = 1;
 				}
                 BTN_release = 0;
             }
         }
+		// Obtencion del eje X
+		gyr_x = read_gyro(GYR_OUT_X_L, 0);
+		gyr_x |= read_gyro(GYR_OUT_X_H, 1);
+
+		// Obtencion del eje Y
+		gyr_y = read_gyro(GYR_OUT_Y_L, 0);
+		gyr_y |= read_gyro(GYR_OUT_Y_H, 1);
+
+		// Obtencion del eje Z
+		gyr_z = read_gyro(GYR_OUT_Z_L, 0);
+		gyr_z |= read_gyro(GYR_OUT_Z_H, 1);
+
+		gyr_x = gyr_x*L3GD20_SENSITIVITY_500DPS;
+        gyr_y = gyr_y*L3GD20_SENSITIVITY_500DPS;
+        gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
+
+		gfx_fillScreen(LCD_BLACK);
+		sprintf(gyr_x_c, "%s", show_info("X:", gyr_x, 25));
+		sprintf(gyr_y_c, "%s", show_info("Y:", gyr_y, 75));
+		sprintf(gyr_z_c, "%s", show_info("Z:", gyr_z, 125));
+		show_info("Serial:", (int16_t)trans, 175);
+		lcd_show_frame();
+
 
 		// Evalua si la transferencia de datos está activada
 		if (trans == 1) {
