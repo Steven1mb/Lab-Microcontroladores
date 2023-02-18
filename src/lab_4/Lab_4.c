@@ -37,6 +37,12 @@ char* show_info(char label[10], int16_t value, int y_axis);
 
 char int_to_str[10], lcd_out[10], gyr_x_c[10], gyr_y_c[10], gyr_z_c[10];
 
+// Variables para controlar los rebotes
+char BTN_press = 0;
+char BTN_release = 0;
+char BTN_released = 1;
+char Bouncevalue = 1; // Tan solo 1 bounce porque las iteraciones del programa son muy lentas
+
 // Inicialización del SPI5 para leer giroscopio
 void spi_setup(void)
 {
@@ -91,6 +97,13 @@ int main(void)
 {
 	clock_setup();
 	spi_setup();
+
+	/* Enable GPIOA clock. */
+	rcc_periph_clock_enable(RCC_GPIOA);
+	/* Set GPIO0 (in GPIO port A) to 'input open-drain'. */
+	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO0);
+
+	int trans = 1;
 
 	console_setup(115200);
 	sdram_init();
@@ -162,16 +175,50 @@ int main(void)
         gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
 
 		gfx_fillScreen(LCD_BLACK);
-
-		console_puts(show_info("X:", gyr_x, 25)); console_puts("\t");
-		console_puts(show_info("Y:", gyr_y, 75)); console_puts("\t");
-		console_puts(show_info("Z:", gyr_z, 125)); console_puts("\n");
-
+		sprintf(gyr_x_c, "%s", show_info("X:", gyr_x, 25));
+		sprintf(gyr_y_c, "%s", show_info("Y:", gyr_y, 75));
+		sprintf(gyr_z_c, "%s", show_info("Z:", gyr_z, 125));
 		lcd_show_frame();
 
-		int i;
-		for (i = 0; i < 80000; i++)    /* Wait a bit. */
-			__asm__("nop");
+		// Checkear si GP3 es presionado
+        if (gpio_get(GPIOA, GPIO0))
+        {
+            // Maneja el numero de veces que el boton ha sido constante
+            BTN_press++;
+            BTN_release = 0;
+
+            // El boton es constante en ser presionado
+            if (BTN_press > Bouncevalue)
+            {
+                // Habilitar el dejar de presionar el boton
+                BTN_press = 0;
+				BTN_released = 0;
+            }
+        } else {
+			// Maneja el numero de veces que el boton ha sido constante
+            BTN_release++;
+            BTN_press = 0;
+
+            // El boton es constante en ser soltado
+            if (BTN_release > Bouncevalue)
+            {
+				if (BTN_released == 0)
+				{
+                    // Alterna la transferencia de datos
+					trans = ~trans;
+					BTN_released = 1;
+				}
+                BTN_release = 0;
+            }
+        }
+
+		// Evalua si la transferencia de datos está activada
+		if (trans == 1) {
+			console_puts(gyr_x_c); console_puts("\t");
+			console_puts(gyr_y_c); console_puts("\t");
+			console_puts(gyr_z_c); console_puts("\n");
+			gpio_toggle(GPIOG, GPIO14); // Parpadea el LED4
+		} else gpio_clear(GPIOG, GPIO14); // Apaga LED4
 	}
 
 	return 0;
