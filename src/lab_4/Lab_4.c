@@ -32,8 +32,10 @@
 
 void spi_setup(void);
 int main(void);
-uint8_t read_gyro_low(uint8_t eje);
-uint16_t read_gyro_high(uint8_t eje);
+uint16_t read_gyro(uint8_t eje, int high);
+char* show_info(char label[10], int16_t value, int y_axis);
+
+char int_to_str[10], lcd_out[10], gyr_x_c[10], gyr_y_c[10], gyr_z_c[10];
 
 // Inicialización del SPI5 para leer giroscopio
 void spi_setup(void)
@@ -124,9 +126,6 @@ int main(void)
 	int16_t gyr_y;
 	int16_t gyr_z;
 
-	char int_to_str[10];
-	char lcd_out[10];
-
 	// Configuracion del giroscopio mediante SPI5
 	gpio_clear(GPIOC, GPIO1);
 	spi_send(SPI5, GYR_CTRL_REG1); 
@@ -147,46 +146,28 @@ int main(void)
 
 	while (1) {
 		// Obtencion del eje X
-		gyr_x = read_gyro_low(GYR_OUT_X_L);
-		gyr_x |= read_gyro_high(GYR_OUT_X_H);
+		gyr_x = read_gyro(GYR_OUT_X_L, 0);
+		gyr_x |= read_gyro(GYR_OUT_X_H, 1);
 
 		// Obtencion del eje Y
-		gyr_y = read_gyro_low(GYR_OUT_Y_L);
-		gyr_y |= read_gyro_high(GYR_OUT_Y_H);
+		gyr_y = read_gyro(GYR_OUT_Y_L, 0);
+		gyr_y |= read_gyro(GYR_OUT_Y_H, 1);
 
 		// Obtencion del eje Z
-		gyr_z = read_gyro_low(GYR_OUT_Z_L);
-		gyr_z |= read_gyro_high(GYR_OUT_Z_H);
+		gyr_z = read_gyro(GYR_OUT_Z_L, 0);
+		gyr_z |= read_gyro(GYR_OUT_Z_H, 1);
 
 		gyr_x = gyr_x*L3GD20_SENSITIVITY_500DPS;
         gyr_y = gyr_y*L3GD20_SENSITIVITY_500DPS;
         gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
 
-		sprintf(lcd_out, "%s", "X:");
-		sprintf(int_to_str, "%d", gyr_x);
-		strcat(lcd_out, int_to_str);
-
 		gfx_fillScreen(LCD_BLACK);
-		gfx_setCursor(10, 25);
-		gfx_puts(lcd_out);
-	
-		sprintf(lcd_out, "%s", "Y:");
-		sprintf(int_to_str, "%d", gyr_y);
-		strcat(lcd_out, int_to_str);
 
-		gfx_setCursor(10, 75);
-		gfx_puts(lcd_out);
+		console_puts(show_info("X:", gyr_x, 25)); console_puts("\t");
+		console_puts(show_info("Y:", gyr_y, 75)); console_puts("\t");
+		console_puts(show_info("Z:", gyr_z, 125)); console_puts("\n");
 
-		sprintf(lcd_out, "%s", "Z:");
-		sprintf(int_to_str, "%d", gyr_z);
-		strcat(lcd_out, int_to_str);
-
-		gfx_setCursor(10, 125);
-		gfx_puts(lcd_out);
-	
 		lcd_show_frame();
-
-		console_puts("TEST\n");
 
 		int i;
 		for (i = 0; i < 80000; i++)    /* Wait a bit. */
@@ -196,30 +177,30 @@ int main(void)
 	return 0;
 }
 
-uint8_t read_gyro_low(uint8_t eje) {
-
-	uint8_t gyr;
-
-	gpio_clear(GPIOC, GPIO1);
-		spi_send(SPI5, eje | GYR_RNW);
-		spi_read(SPI5);
-		spi_send(SPI5, 0);
-		gyr = spi_read(SPI5);
-		gpio_set(GPIOC, GPIO1);
-	
-	return gyr;
-}
-
-uint16_t read_gyro_high(uint8_t eje) {
+uint16_t read_gyro(uint8_t eje, int high) {
 
 	uint16_t gyr;
 
 	gpio_clear(GPIOC, GPIO1);
-		spi_send(SPI5, eje | GYR_RNW);
-		spi_read(SPI5);
-		spi_send(SPI5, 0);
-		gyr = spi_read(SPI5) << 8;
-		gpio_set(GPIOC, GPIO1);
+	spi_send(SPI5, eje | GYR_RNW);
+	spi_read(SPI5);
+	spi_send(SPI5, 0);
+	gyr = spi_read(SPI5);
+	if (high) gyr = gyr << 8;
+	gpio_set(GPIOC, GPIO1);
 	
 	return gyr;
+}
+
+// Esta funcion muestra informacion en la LCD
+char* show_info(char label[10], int16_t value, int y_axis) {
+
+	sprintf(lcd_out, "%s", label);
+	sprintf(int_to_str, "%d", value);
+	strcat(lcd_out, int_to_str);
+	gfx_setCursor(10, y_axis);
+	gfx_puts(lcd_out);
+
+	char *val = int_to_str;
+	return val;
 }
