@@ -238,8 +238,14 @@ int main(void)
 		bat_v = (read_adc_naiive(1) * 5/4095) * 1.8;
 
 		// Se evalúa condición de la alarma
-		if (bat_v <= 7) alarma = true;
-		else alarma = false;
+		if (bat_v <= 7) {
+			alarma = true;
+			gpio_toggle(GPIOG, GPIO13); // Parpadea el LED3
+		} 
+		else{
+			alarma = false;
+			gpio_clear(GPIOG, GPIO13); // Apaga LED3
+		}
 
 		// Se muestran datos en LCD
 		gfx_fillScreen(LCD_BLACK);
