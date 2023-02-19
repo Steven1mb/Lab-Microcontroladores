@@ -20,6 +20,7 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <string.h>
+#include <stdbool.h>
 #include "clock.h"
 #include "console.h"
 #include "sdram.h"
@@ -28,14 +29,19 @@
 #include <libopencm3/stm32/spi.h>
 #include <libopencm3/stm32/gpio.h>
 #include <libopencm3/stm32/rcc.h>
-#include <libopencm3/stm32/usart.h> 
+#include <libopencm3/stm32/usart.h>
+#include <libopencm3/stm32/adc.h>
 
 void spi_setup(void);
 int main(void);
 uint16_t read_gyro(uint8_t eje, int high);
-char* show_info(char label[10], int16_t value, int y_axis);
+char* show_info(char label[10], float value, int y_axis, int entero);
+static void adc_setup(void);
+static uint16_t read_adc_naiive(uint8_t channel);
 
-char int_to_str[10], lcd_out[10], gyr_x_c[10], gyr_y_c[10], gyr_z_c[10];
+char float_to_str[10], lcd_out[10], gyr_x_c[10], gyr_y_c[10], gyr_z_c[10], bat_c[10], alarma_c[10];
+float bat_v;
+bool alarma = false;
 
 // Variables para controlar los rebotes
 char BTN_press = 0;
@@ -71,6 +77,27 @@ void spi_setup(void)
 	gpio_mode_setup(GPIOG, GPIO_MODE_OUTPUT, GPIO_PUPD_NONE, GPIO13 | GPIO14);
 }
 
+static void adc_setup(void)
+{
+	rcc_periph_clock_enable(RCC_ADC1);
+	gpio_mode_setup(GPIOA, GPIO_MODE_ANALOG, GPIO_PUPD_NONE, GPIO1);
+	adc_power_off(ADC1);
+	adc_disable_scan_mode(ADC1);
+	adc_set_sample_time_on_all_channels(ADC1, ADC_SMPR_SMP_3CYC);
+	adc_power_on(ADC1);
+}
+
+static uint16_t read_adc_naiive(uint8_t channel)
+{
+	uint8_t channel_array[16];
+	channel_array[0] = channel;
+	adc_set_regular_sequence(ADC1, 1, channel_array);
+	adc_start_conversion_regular(ADC1);
+	while (!adc_eoc(ADC1));
+	uint16_t reg16 = adc_read_regular(ADC1);
+	return reg16;
+}
+
 #define d2r(d) ((d) * 6.2831853 / 360.0) /* Convert degrees to radians */
 #define GYR_RNW			(1 << 7) /* Write when zero */
 #define GYR_MNS			(1 << 6) /* Multiple reads when 1 */
@@ -103,6 +130,8 @@ int main(void)
 	/* Set GPIO0 (in GPIO port A) to 'input open-drain'. */
 	gpio_mode_setup(GPIOA, GPIO_MODE_INPUT, GPIO_PUPD_NONE, GPIO0);
 
+	adc_setup();
+
 	int trans = 1;
 
 	console_setup(115200);
@@ -127,9 +156,9 @@ int main(void)
 	gfx_setCursor(15, 60);
 	gfx_puts("Estudiantes:");
 	gfx_setCursor(15, 72);
-	gfx_puts("Adrian");
+	gfx_puts("Adrian A, B80835");
 	gfx_setCursor(15, 84);
-	gfx_puts("Steven");
+	gfx_puts("Steven M, B95109");
 	lcd_show_frame();
 	msleep(2000);
 	gfx_setTextColor(LCD_YELLOW, LCD_BLACK);
@@ -149,7 +178,7 @@ int main(void)
 	spi_read(SPI5);
 	gpio_set(GPIOC, GPIO1);
 
-	// Configuracion del giroscopio mediante SPI5
+	// Configuracion 2 del giroscopio mediante SPI5
 	gpio_clear(GPIOC, GPIO1);
 	spi_send(SPI5, GYR_CTRL_REG4);
 	spi_read(SPI5);
@@ -157,7 +186,7 @@ int main(void)
 	spi_read(SPI5);
 	gpio_set(GPIOC, GPIO1);
 
-	while (1) {
+	while (1) { // Manejo de rebotes
 		// Checkear si botón USER es presionado
         if (gpio_get(GPIOA, GPIO0))
         {
@@ -205,19 +234,31 @@ int main(void)
         gyr_y = gyr_y*L3GD20_SENSITIVITY_500DPS;
         gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
 
+		// Medir tensión de batería y aplicar ajuste al divisor de tensiones
+		bat_v = (read_adc_naiive(1) * 5/4095) * 1.8;
+
+		// Se evalúa condición de la alarma
+		if (bat_v <= 7) alarma = true;
+		else alarma = false;
+
+		// Se muestran datos en LCD
 		gfx_fillScreen(LCD_BLACK);
-		sprintf(gyr_x_c, "%s", show_info("X:", gyr_x, 25));
-		sprintf(gyr_y_c, "%s", show_info("Y:", gyr_y, 75));
-		sprintf(gyr_z_c, "%s", show_info("Z:", gyr_z, 125));
-		show_info("Serial:", (int16_t)trans, 175);
+		sprintf(gyr_x_c, "%s", show_info("X:", gyr_x, 25, 1));
+		sprintf(gyr_y_c, "%s", show_info("Y:", gyr_y, 75, 1));
+		sprintf(gyr_z_c, "%s", show_info("Z:", gyr_z, 125, 1));
+		show_info("Serial:", trans, 175, 1);
+		sprintf(bat_c, "%s", show_info("Bat:", bat_v, 225, 0)); gfx_puts("V");
 		lcd_show_frame();
 
+		sprintf(alarma_c, "%d", alarma);
 
 		// Evalua si la transferencia de datos está activada
 		if (trans == 1) {
 			console_puts(gyr_x_c); console_puts("\t");
 			console_puts(gyr_y_c); console_puts("\t");
-			console_puts(gyr_z_c); console_puts("\n");
+			console_puts(gyr_z_c); console_puts("\t");
+			console_puts(bat_c); console_puts("\t");
+			console_puts(alarma_c); console_puts("\n");
 			gpio_toggle(GPIOG, GPIO14); // Parpadea el LED4
 		} else gpio_clear(GPIOG, GPIO14); // Apaga LED4
 	}
@@ -241,14 +282,15 @@ uint16_t read_gyro(uint8_t eje, int high) {
 }
 
 // Esta funcion muestra informacion en la LCD
-char* show_info(char label[10], int16_t value, int y_axis) {
+char* show_info(char label[10], float value, int y_axis, int entero) {
 
 	sprintf(lcd_out, "%s", label);
-	sprintf(int_to_str, "%d", value);
-	strcat(lcd_out, int_to_str);
+	if (entero) sprintf(float_to_str, "%.0f", value);
+	else sprintf(float_to_str, "%.2f", value);
+	strcat(lcd_out, float_to_str);
 	gfx_setCursor(10, y_axis);
 	gfx_puts(lcd_out);
 
-	char *val = int_to_str;
+	char *val = float_to_str;
 	return val;
 }
