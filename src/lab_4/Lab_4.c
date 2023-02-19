@@ -139,7 +139,7 @@ int main(void)
 	lcd_spi_init();
 	console_puts("LCD Initialized\n");
 	console_puts("Should have a checker pattern, press any key to proceed\n");
-	msleep(2000);
+	msleep(500);
 	gfx_init(lcd_draw_pixel, 240, 320);
 	gfx_fillScreen(LCD_GREY);
 	gfx_fillRoundRect(10, 10, 220, 220, 5, LCD_WHITE);
@@ -147,17 +147,17 @@ int main(void)
 	gfx_fillCircle(20, 250, 10, LCD_RED);
 	gfx_fillCircle(120, 250, 10, LCD_GREEN);
 	gfx_fillCircle(220, 250, 10, LCD_BLUE);
-	gfx_setTextSize(1);
+	gfx_setTextSize(2);
 	gfx_setCursor(15, 25);
-	gfx_puts("STM32F429i-Disco");
-	gfx_setTextSize(1);
-	gfx_setCursor(15, 49);
+	gfx_puts("STM32F4-Disco");
+	gfx_setCursor(15, 75);
 	gfx_puts("Laboratorio 4");
-	gfx_setCursor(15, 60);
+	gfx_setCursor(15, 125);
 	gfx_puts("Estudiantes:");
-	gfx_setCursor(15, 72);
+	gfx_setTextSize(1);
+	gfx_setCursor(15, 175);
 	gfx_puts("Adrian A, B80835");
-	gfx_setCursor(15, 84);
+	gfx_setCursor(15, 200);
 	gfx_puts("Steven M, B95109");
 	lcd_show_frame();
 	msleep(2000);
@@ -235,7 +235,7 @@ int main(void)
         gyr_z = gyr_z*L3GD20_SENSITIVITY_500DPS;
 
 		// Medir tensión de batería y aplicar ajuste al divisor de tensiones
-		bat_v = (read_adc_naiive(1) * 5/4095) * 1.8;
+		bat_v = (read_adc_naiive(1) * 5/4095) * 1.8118;
 
 		// Se evalúa condición de la alarma
 		if (bat_v <= 7) {
