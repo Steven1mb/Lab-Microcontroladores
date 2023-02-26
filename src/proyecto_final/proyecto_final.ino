@@ -1,5 +1,6 @@
 #include "dht.h"
-#define dht_apin A1 // El sensor esta conectado al PIN A1
+#define soil_apin A0 // El higrómetro está conectado al PIN A0
+#define dht_apin A1 // El DHT11 está conectado al PIN A1
  
 dht DHT;
  
@@ -16,15 +17,15 @@ void loop(){
     // Inicio del programa 
 
     DHT.read11(dht_apin);
+    int Moisture = analogRead(soil_apin);
     
     Serial.print("Humedad actual = ");
-    Serial.print(DHT.humidity);
-    Serial.print("%  ");
+    Serial.println(Moisture);
+
     Serial.print("Temperatura actual = ");
-    Serial.print(DHT.temperature); 
-    Serial.println("C  ");
+    Serial.print(DHT.temperature);
+    Serial.println("°C");
     
-    delay(5000);// Delay para accesar el sensor dentro de 5 segundos
- 
+    delay(3000);// Delay para accesar sensores dentro de 3 segundos
  
 }//  Fin del programa
