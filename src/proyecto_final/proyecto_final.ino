@@ -6,6 +6,8 @@
 dht DHT;
 LiquidCrystal_I2C lcd(0x27,16,2); 
 
+const int pin_agua = 2;
+const int pin_abanico = 4;
 void setup(){
  
   Serial.begin(9600);
@@ -13,6 +15,8 @@ void setup(){
   lcd.init();
   lcd.backlight();
   lcd.clear();
+  pinMode(pin_agua, OUTPUT);
+  pinMode(pin_abanico, OUTPUT);
 }
  
 void loop(){
@@ -41,5 +45,30 @@ void loop(){
     lcd.display();
 
     delay(3000);// Delay para accesar sensores dentro de 3 segundos
+
+    temperatura = DHT.temperatura
+
+    // Enciendo el abanico cuando temperatura es alta para refrescar
+    // Apago  abanico cuando llega a 30 grados
+    if (temperatura >= 35 ){
+      digitalWrite(pin_abanico, HIGH);
+
+    }
+    else if (temperatura < 30 ){
+      digitalWrite(pin_abanico, LOW);
+    
+    }
+
+    // Enciendo la valvula si la humedad es baja y apago cuando alta
+
+    if (Moisture >= 800){
+      digitalWrite(pin_agua, HIGH);
+
+    }else if (Moisture = 200){
+      digitalWrite(pin_agua, LOW);
+    }
+
+
+
  
 }//  Fin del programa
