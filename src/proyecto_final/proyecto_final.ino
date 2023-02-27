@@ -37,9 +37,11 @@ void loop(){
     t_2 = millis();
     t_min = t_2 - t_1;
     t_min = (t_min/1000)/60;
+    float humedad = ((1/(float)Moisture) - 0.00111) * 45000;
     
     Serial.print("Humedad actual = ");
-    Serial.println(Moisture);
+    Serial.print(humedad); Serial.println(" %");
+    Serial.print(Moisture); Serial.println(" raw");
 
     Serial.print("Temperatura actual = ");
     Serial.print(DHT.temperature);
@@ -56,7 +58,8 @@ void loop(){
     lcd.setCursor(0,0);
     lcd.print("Humedad:"); 
     lcd.setCursor(9,0);
-    lcd.print(Moisture); 
+    lcd.print(humedad);
+    lcd.print("%"); 
     lcd.setCursor (0,1);
     lcd.print("Temp: ");
     lcd.setCursor(9,1);
@@ -93,7 +96,7 @@ void loop(){
     if (Moisture >= 800){
       regar_planta();
     }
-    else if (Moisture <= 200){
+    else if (Moisture <= 450){
       digitalWrite(pin_agua, LOW);
     }
 
