@@ -2,7 +2,7 @@
 #include <LiquidCrystal_I2C.h>
 #define soil_apin A0 // El higrómetro está conectado al PIN A0
 #define dht_apin A1 // El DHT11 está conectado al PIN A1
-#define pin_agua 2 // Relay de la valvula con PIN 2
+#define pin_agua 7 // Relay de la valvula con PIN 2
 #define pin_abanico 4 // Relay del ventilador con PIN 4
 
 unsigned long t_1 = 0;
@@ -23,8 +23,8 @@ void setup(){
   lcd.clear();
   pinMode(pin_agua, OUTPUT);
   pinMode(pin_abanico, OUTPUT);
-  digitalWrite(pin_agua, LOW);
-  digitalWrite(pin_abanico, LOW);
+  digitalWrite(pin_agua, HIGH);
+  digitalWrite(pin_abanico, HIGH);
 }
  
 void loop(){
@@ -39,6 +39,7 @@ void loop(){
     t_min = (t_min/1000)/60;
     float humedad = ((1/(float)Moisture) - 0.00111) * 45000;
     
+    /*
     Serial.print("Humedad actual = ");
     Serial.print(humedad); Serial.println(" %");
     Serial.print(Moisture); Serial.println(" raw");
@@ -53,6 +54,14 @@ void loop(){
     Serial.println(t_2);
     Serial.print("t_min: ");
     Serial.println(t_min);   
+    */
+
+    Serial.print(humedad);
+    Serial.print("\t");
+    Serial.print(DHT.temperature);
+    Serial.print("\t");
+    Serial.print(t_min);
+    Serial.print("\n");
     
     lcd.clear();
     lcd.setCursor(0,0);
@@ -83,11 +92,11 @@ void loop(){
     // Enciendo el abanico cuando temperatura es alta para refrescar
     // Apago abanico cuando llega a 30 grados
     if (temperatura >= 35 ){
-      digitalWrite(pin_abanico, HIGH);
+      digitalWrite(pin_abanico, LOW);
 
     }
     else if (temperatura < 30 ){
-      digitalWrite(pin_abanico, LOW);
+      digitalWrite(pin_abanico, HIGH);
     
     }
 
@@ -97,7 +106,7 @@ void loop(){
       regar_planta();
     }
     else if (Moisture <= 450){
-      digitalWrite(pin_agua, LOW);
+      digitalWrite(pin_agua, HIGH);
     }
 
     delay(2000);// Delay para accesar sensores dentro de 2 segundos
@@ -105,6 +114,6 @@ void loop(){
 }//  Fin del programa
 
 void regar_planta(){
-  digitalWrite(pin_agua, HIGH);
+  digitalWrite(pin_agua, LOW);
   t_1 = millis();
-  }
+}
