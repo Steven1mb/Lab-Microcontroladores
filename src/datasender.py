@@ -1,7 +1,6 @@
 import paho.mqtt.client as mqtt
 import serial, json
 
-#ser = serial.Serial(port = 'COM4', baudrate=115200, timeout=1)
 ser = serial.Serial(
     port='COM4',\
     baudrate=9600,\
@@ -53,6 +52,7 @@ while True:
             print(output)
             print(output)
             
+            # Se envían los datos en formato JSON hacia ThingsBoard
             client.publish(topic, output)
             client.loop()
 

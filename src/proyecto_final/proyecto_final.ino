@@ -29,17 +29,23 @@ void setup(){
  
 void loop(){
 
-    // Inicio del programa 
-
+    // Inicio del programa
     DHT.read11(dht_apin);
     int Moisture = analogRead(soil_apin);
 
+    // Esta seccion es la encargada de obtener los minutos que
+    // han pasado desde el último riego
     t_2 = millis();
     t_min = t_2 - t_1;
     t_min = (t_min/1000)/60;
+
+    // Se toma el dato raw de Moisture y se convierte en una escala
+    // de 0% a 100%, un valor de Moisture de 300 corresponde al 100%
+    // de humedad posible de la tierra y un valor Moisture de 900
+    // sería la condición de tierra más seca posible, el 0% de humedad
     float humedad = ((1/(float)Moisture) - 0.00111) * 45000;
     
-    /*
+    /* Despliegue de datos opcional para fines de debug
     Serial.print("Humedad actual = ");
     Serial.print(humedad); Serial.println(" %");
     Serial.print(Moisture); Serial.println(" raw");
@@ -93,19 +99,16 @@ void loop(){
     // Apago abanico cuando llega a 30 grados
     if (temperatura >= 35 ){
       digitalWrite(pin_abanico, LOW);
-
     }
     else if (temperatura < 30 ){
       digitalWrite(pin_abanico, HIGH);
-    
     }
 
     // Enciendo la valvula si la humedad es baja y apago cuando alta
-
-    if (Moisture >= 800){
+    if (humedad <= 20){
       regar_planta();
     }
-    else if (Moisture <= 450){
+    else if (humedad >= 80){
       digitalWrite(pin_agua, HIGH);
     }
 
@@ -113,7 +116,8 @@ void loop(){
 
 }//  Fin del programa
 
+// Función que activa la válvula de agua
 void regar_planta(){
   digitalWrite(pin_agua, LOW);
-  t_1 = millis();
+  t_1 = millis(); // Resetear los minutos desde último riego
 }
