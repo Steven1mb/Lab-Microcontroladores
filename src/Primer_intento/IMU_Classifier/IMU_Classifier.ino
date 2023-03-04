@@ -1,15 +1,20 @@
 /*
   IMU Classifier
+
   This example uses the on-board IMU to start reading acceleration and gyroscope
   data from on-board IMU, once enough samples are read, it then uses a
   TensorFlow Lite (Micro) model to try to classify the movement as a known gesture.
+
   Note: The direct use of C/C++ pointers, namespaces, and dynamic memory is generally
         discouraged in Arduino examples, and in the future the TensorFlowLite library
         might change to make the sketch simpler.
+
   The circuit:
   - Arduino Nano 33 BLE or Arduino Nano 33 BLE Sense board.
+
   Created by Don Coleman, Sandeep Mistry
   Modified by Dominic Pajak, Sandeep Mistry
+
   This example code is in the public domain.
 */
 
@@ -25,9 +30,9 @@
 #include "model.h"
 
 const float accelerationThreshold = 2.5; // threshold of significant in G's
-const int numSamples = 119;
+const int numSamples = 3000;
 
-int samplesRead = numSamples;
+int samplesRead = 0;
 
 // global variables used for TensorFlow Lite (Micro)
 //tflite::MicroErrorReporter tflErrorReporter;
@@ -51,7 +56,7 @@ byte tensorArena[tensorArenaSize] __attribute__((aligned(16)));
 const char* GESTURES[] = {
   "Estacionario",
   "Vueltas",
-  "Arriba-Abajo"
+  "Arriba-Abajo",
 };
 
 #define NUM_GESTURES (sizeof(GESTURES) / sizeof(GESTURES[0]))
@@ -84,7 +89,7 @@ void setup() {
   }
 
   // Create an interpreter to run the model
-  tflInterpreter = new tflite::MicroInterpreter(tflModel, tflOpsResolver, tensorArena, tensorArenaSize);
+  tflInterpreter = new tflite::MicroInterpreter(tflModel, tflOpsResolver, tensorArena, tensorArenaSize, 0);
 
   // Allocate memory for the model's input and output tensors
   tflInterpreter->AllocateTensors();
@@ -97,6 +102,7 @@ void setup() {
 void loop() {
   float aX, aY, aZ, gX, gY, gZ;
 
+  /*
   // wait for significant motion
   while (samplesRead == numSamples) {
     if (IMU.accelerationAvailable()) {
@@ -109,11 +115,14 @@ void loop() {
       // check if it's above the threshold
       if (aSum >= accelerationThreshold) {
         // reset the sample read count
-        //samplesRead = 0;
+        samplesRead = 0;
         break;
       }
     }
   }
+  */
+ 
+  samplesRead = 0;
 
   // check if the all the required samples have been read since
   // the last time the significant motion was detected
