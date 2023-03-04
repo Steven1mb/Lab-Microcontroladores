@@ -22,20 +22,20 @@
 
 #include <TensorFlowLite.h>
 #include <tensorflow/lite/micro/all_ops_resolver.h>
-#include <tensorflow/lite/micro/micro_error_reporter.h>
+//#include <tensorflow/lite/micro/micro_error_reporter.h>
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/schema/schema_generated.h>
-#include <tensorflow/lite/version.h>
+//#include <tensorflow/lite/version.h>
 
 #include "model.h"
 
 const float accelerationThreshold = 2.5; // threshold of significant in G's
-const int numSamples = 3000;
+const int numSamples = 200;
 
-int samplesRead = numSamples;
+int samplesRead = 0;
 
 // global variables used for TensorFlow Lite (Micro)
-tflite::MicroErrorReporter tflErrorReporter;
+//tflite::MicroErrorReporter tflErrorReporter;
 
 // pull in all the TFLM ops, you can remove this line and
 // only pull in the TFLM ops you need, if would like to reduce
@@ -89,7 +89,7 @@ void setup() {
   }
 
   // Create an interpreter to run the model
-  tflInterpreter = new tflite::MicroInterpreter(tflModel, tflOpsResolver, tensorArena, tensorArenaSize, &tflErrorReporter);
+  tflInterpreter = new tflite::MicroInterpreter(tflModel, tflOpsResolver, tensorArena, tensorArenaSize, 0);
 
   // Allocate memory for the model's input and output tensors
   tflInterpreter->AllocateTensors();
@@ -102,6 +102,7 @@ void setup() {
 void loop() {
   float aX, aY, aZ, gX, gY, gZ;
 
+  /*
   // wait for significant motion
   while (samplesRead == numSamples) {
     if (IMU.accelerationAvailable()) {
@@ -119,6 +120,9 @@ void loop() {
       }
     }
   }
+  */
+ 
+  samplesRead = 0;
 
   // check if the all the required samples have been read since
   // the last time the significant motion was detected
