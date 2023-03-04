@@ -10,7 +10,7 @@ ser = serial.Serial(
     timeout=0\
     )
 
-f = open('Estacionario.csv', 'w+') # Sobreescribe el archivo .csv
+f = open('Arriba-Abajo.csv', 'w+') # Sobreescribe el archivo .csv
 
 f.write("aX,aY,aZ,gX,gY,gZ\n") # Header
 
