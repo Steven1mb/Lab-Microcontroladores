@@ -1,6 +1,7 @@
 #!/usr/bin/python
 import serial
 
+# Conectar al puerto del Arduino NANO 33 BLE
 ser = serial.Serial(
     port='COM6',\
     baudrate=9600,\

@@ -17,10 +17,8 @@
 
 #include <TensorFlowLite.h>
 #include <tensorflow/lite/micro/all_ops_resolver.h>
-//#include <tensorflow/lite/micro/micro_error_reporter.h>
 #include <tensorflow/lite/micro/micro_interpreter.h>
 #include <tensorflow/lite/schema/schema_generated.h>
-//#include <tensorflow/lite/version.h>
 
 #include "model.h"
 
@@ -28,9 +26,6 @@ const float accelerationThreshold = 2.5; // threshold of significant in G's
 const int numSamples = 119;
 
 int samplesRead = numSamples;
-
-// global variables used for TensorFlow Lite (Micro)
-//tflite::MicroErrorReporter tflErrorReporter;
 
 // pull in all the TFLM ops, you can remove this line and
 // only pull in the TFLM ops you need, if would like to reduce
@@ -84,6 +79,7 @@ void setup() {
   }
 
   // Create an interpreter to run the model
+  // Se eliminó un argumento obsoleto
   tflInterpreter = new tflite::MicroInterpreter(tflModel, tflOpsResolver, tensorArena, tensorArenaSize);
 
   // Allocate memory for the model's input and output tensors
@@ -109,7 +105,7 @@ void loop() {
       // check if it's above the threshold
       if (aSum >= accelerationThreshold) {
         // reset the sample read count
-        //samplesRead = 0;
+        samplesRead = 0;
         break;
       }
     }
@@ -144,6 +140,7 @@ void loop() {
           return;
         }
 
+        // Se imprime la probabilidad de cada movimiento en una escala de 0 a 1
         // Loop through the output tensor values from the model
         for (int i = 0; i < NUM_GESTURES; i++) {
           Serial.print(GESTURES[i]);
